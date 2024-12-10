@@ -1,0 +1,67 @@
+# 创建xarray.Dataset
+import numpy as np
+
+nc_dict = {
+    "dims": {"lat": 25, "time": 2920, "lon": 53},
+
+    "coords": {
+        "lat": {
+            "dims": ("lat",),
+            "attrs": {
+                "standard_name": "latitude",
+                "long_name": "Latitude",
+                "units": "degrees_north",
+                "axis": "Y",
+            },
+            "data":np.linspace(75,15,25,endpoint=True,dtype=np.float32),
+        },
+        "lon": {
+            "dims": ("lon",),
+            "attrs": {
+                "standard_name": "longitude",
+                "long_name": "Longitude",
+                "units": "degrees_east",
+                "axis": "X",
+            },
+            "data":np.linspace(200,330,53,endpoint=True,dtype=np.float32),
+        },
+        "time": {
+            "dims": ("time",),
+            "attrs": {"standard_name": "time", "long_name": "Time"},
+            "data":np.arange(np.datetime64('2013-01-01T00:00:00','s'),np.datetime64('2014-12-31T19:00:00','s'),np.timedelta64(6,'h'))
+        },
+    },
+
+    "data_vars": {
+        "air": {
+            "dims": ("time", "lat", "lon"),
+            "attrs": {
+                "long_name": "4xDaily Air temperature at sigma level 995",
+                "units": "degK",
+                "precision": 2,
+                "GRIB_id": 11,
+                "GRIB_name": "TMP",
+                "var_desc": "Air temperature",
+                "dataset": "NMC Reanalysis",
+                "level_desc": "Surface",
+                "statistic": "Individual Obs",
+                "parent_stat": "Other",
+                "actual_range": [185.16000366210938, 322.1000061035156],
+            },
+            "data":np.random.rand(2920,25,53).astype(np.float32),
+        }
+    },
+
+    "attrs": {
+        "Conventions": "COARDS",
+        "title": "4x daily NMC reanalysis (1948)",
+        "description": "Data is from NMC initialized reanalysis\n(4x/day).  These are the 0.9950 sigma level values.",
+        "platform": "Model",
+        "references": "http://www.esrl.noaa.gov/psd/data/gridded/data.ncep.reanalysis.html",
+    },
+}
+
+# 使用`from_dict`,从python字典中创建xarray Dataset
+ds2 = xr.Dataset.from_dict(nc_dict)
+
+ds2.to_netcdf("air_tempearture_random.nc")
